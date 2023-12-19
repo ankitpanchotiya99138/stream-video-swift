@@ -136,9 +136,15 @@ public class StreamVideo: ObservableObject {
             self?.token = userToken
         }
         if user.type != .anonymous {
-            let userAuth = UserAuth { [unowned self] in
+            let userAuth = UserAuth { [weak self] in
+                guard let `self` = self else {
+                    return
+                }
                 self.token.rawValue
-            } connectionId: { [unowned self] in
+            } connectionId: { [weak self] in
+                guard let `self` = self else {
+                    return
+                }
                 await self.loadConnectionId()
             }
             coordinatorClient.middlewares.append(userAuth)
